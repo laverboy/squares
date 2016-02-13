@@ -8,9 +8,9 @@
 </head>
 <body>
 
-<div class="wrap" id="squares-wrap" :class="{ finished: finished }">
+<div class="wrap" id="squares-wrap">
     <div id="squares-container" :style="containerStyle()">
-        <div class="result" :style="containerStyle()">
+        <div class="result" :style="containerStyle()" v-show="finished" transition="show">
             <h2>{{ result() }}</h2>
         </div>
 
