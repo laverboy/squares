@@ -1,0 +1,62 @@
+.wrap{
+    width: 600px;
+    margin: 50px auto;
+}
+
+div#squares-container {
+    position: relative;
+    margin: 0 auto;
+}
+
+.dot {
+    display: block;
+    background-color: #000;
+    position: absolute;
+}
+
+a.s, a.e {
+    display: block;
+    position: absolute;
+    background-color: rgba(228, 228, 245, 0.3);
+}
+
+a.s.active, a.e.active {
+    background-color: #000;
+}
+
+.box {
+    position: absolute;
+}
+.box.won {
+    background-color: #bada55;
+}
+
+.player {
+    width: 48%;
+    float: left;
+    margin: 10% 1%;
+    padding: 1.5%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.player.active {
+    background-color: #eee;
+}
+
+.player .color {
+    height: 20px;
+}
+
+span.finished {
+    display: none;
+}
+
+.wrap.finished #squares-container {
+    opacity: .2;
+}
+
+.wrap.finished span.finished {
+    display: block;
+}

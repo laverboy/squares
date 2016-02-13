@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Squares</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap" id="squares-wrap" :class="{ finished: finished }">
+    <div id="squares-container" :style="containerStyle()">
+        <span class="finished">{{ result() }}</span>
+        <!-- Dots -->
+        <span v-for="dot in dots" class="dot" :style="dotStyle(dot)"></span>
+
+        <!-- Lines -->
+        <a href="#" v-for="line in lines" class=""
+           @click.prevent="activate(line)"
+           :style="lineStyle(line)"
+           :class="{ active: line.active, s: line.d == 's', e: line.d == 'e' }"
+        ></a>
+
+        <!-- Boxes -->
+        <div class="box" v-for="box in boxes"
+             :style="boxStyle(box)"
+             :class="{ won: box.won }"
+        ></div>
+    </div>
+
+    <div id="players-container">
+        <div class="player" :class="{active: number == currentPlayer}" v-for="(number, player) in players">
+            <h2>Player {{ number }} - {{ playerScore(number) }}</h2>
+            <div class="color" :style="{backgroundColor: player.color}"></div>
+        </div>
+    </div>
+</div>
+
+<script src="underscore.min.js"></script>
+<script src="vue.js"></script>
+<script>
+    Vue.config.debug = true;
+    var sq = new Vue({
+        el: '#squares-wrap',
+        data: {
+            currentPlayer: 1,
+            lineWidth: 20,
+            lineLength: 150,
+            grid: 2,
+            dots : [
+                {x: 0, y: 0},
+                {x: 1, y: 0},
+                {x: 2, y: 0},
+                {x: 0, y: 1},
+                {x: 1, y: 1},
+                {x: 2, y: 1},
+                {x: 0, y: 2},
+                {x: 1, y: 2},
+                {x: 2, y: 2}
+            ],
+            lines : [
+                {x: 1, y: 0, d: 's', active: false}, // first top
+                {x: 0, y: 1, d: 'e', active: false}, // first left
+                {x: 1, y: 1, d: 'e', active: false}, // first right
+                {x: 1, y: 1, d: 's', active: false}, // first bottom
+                {x: 2, y: 0, d: 's', active: false},
+                {x: 2, y: 2, d: 'e', active: false},
+                {x: 2, y: 2, d: 's', active: false},
+                {x: 0, y: 2, d: 'e', active: false},
+                {x: 2, y: 1, d: 'e', active: false},
+                {x: 2, y: 1, d: 's', active: false},
+                {x: 1, y: 2, d: 'e', active: false},
+                {x: 1, y: 2, d: 's', active: false}
+            ],
+            boxes : {
+                11: {x: 1, y: 1, won: false, color: ''},
+                21: {x: 2, y: 1, won: false, color: ''},
+                12: {x: 1, y: 2, won: false, color: ''},
+                22: {x: 2, y: 2, won: false, color: ''}
+            },
+            players : {
+                1 : {
+                    name: '',
+                    score: 0,
+                    color: '#BADA55'
+                },
+                2 : {
+                    name: '',
+                    score: 0,
+                    color: '#DABDAB'
+                }
+            }
+        },
+        computed: {
+            finished: function () {
+                var length = 0, complete = _.reduce(this.boxes, function(count, box){
+                    if(box.won){count++;}
+                    length++;
+                    return count;
+                }, 0);
+                console.log(complete, length);
+                return complete == length;
+            }
+        },
+        methods: {
+            containerStyle: function () {
+                var size = (this.lineLength * this.grid) + (this.lineWidth * (this.grid + 1));
+                return {
+                    width: size + "px",
+                    height: size + "px"
+                };
+            },
+            dotStyle: function (dot) {
+                var style = {};
+                style.left = ((dot.x * this.lineLength) + (dot.x * this.lineWidth)) + 'px';
+                style.top = ((dot.y * this.lineLength) + (dot.y * this.lineWidth)) + 'px';
+                style.width = style.height = this.lineWidth + "px";
+                return style;
+            },
+            lineStyle: function (line) {
+                var style = {};
+                style.left = this.lineLeft(line) + "px";
+                style.top = this.lineTop(line) + "px";
+                style.width = (line.d == 's' ? this.lineLength : this.lineWidth) + "px";
+                style.height = (line.d == 's' ? this.lineWidth : this.lineLength) + "px";
+                return style;
+            },
+            lineLeft: function (line) {
+                return line.d == 'e' ? line.x * this.lineLength + (line.x * this.lineWidth) : (line.x -1) * this.lineLength + (line.x * this.lineWidth)
+            },
+            lineTop: function (line) {
+                return line.d == 's' ? line.y * this.lineLength + (line.y * this.lineWidth) : (line.y -1) * this.lineLength + (line.y * this.lineWidth)
+            },
+            boxStyle: function (box) {
+                var style = {};
+                style.left = (((box.x -1) * this.lineLength) + (box.x * this.lineWidth)) + "px";
+                style.top = (((box.y -1) * this.lineLength) + (box.y * this.lineWidth)) + "px";
+                style.backgroundColor = box.color;
+                style.width = this.lineLength + "px";
+                style.height = this.lineLength + "px";
+                return style;
+            },
+            changePlayer: function () {
+                this.currentPlayer = (this.currentPlayer == 1) ? 2 : 1;
+            },
+            activate: function (line) {
+                line.active = true;
+                var won = this.calculateWinnings(line);
+                if (!won) {
+                    this.changePlayer();
+                }
+            },
+            calculateIfBoxComplete: function (box) {
+                var top = _.find(this.lines, function (obj) {
+                    return obj.x == box.x && obj.y == (box.y - 1) && obj.d == 's';
+                });
+                var right = _.find(this.lines, function (obj) {
+                    return obj.x == box.x && obj.y == box.y && obj.d == 'e';
+                });
+                var bottom = _.find(this.lines, function (obj) {
+                    return obj.x == box.x && obj.y == box.y && obj.d == 's';
+                });
+                var left = _.find(this.lines, function (obj) {
+                    return obj.x == (box.x - 1) && obj.y == box.y && obj.d == 'e';
+                });
+
+                return bottom.active && right.active && top.active && left.active;
+            },
+            calculateWinnings: function (line) {
+                var won = false, box2, box1 = this.boxes["" + line.x + line.y];
+                if (line.d == 's') {
+                    box2 = this.boxes["" + line.x + (line.y + 1)];
+                }
+                if (line.d == 'e') {
+                    box2 = this.boxes["" + (line.x + 1) + line.y];
+                }
+
+                if (box1 && this.calculateIfBoxComplete(box1)) {
+                    box1.won = this.currentPlayer;
+                    box1.color = this.players[this.currentPlayer].color;
+                    won = true;
+                }
+                if (box2 && this.calculateIfBoxComplete(box2)) {
+                    box2.won = this.currentPlayer;
+                    box2.color = this.players[this.currentPlayer].color;
+                    won = true;
+                }
+                return won;
+            },
+            playerScore: function (number) {
+                return _.reduce(this.boxes, function (score, box) {
+                    if (box.won == number) {
+                        score++;
+                    }
+                    return score;
+                }, 0);
+            },
+            result: function () {
+                var player1Score = this.playerScore(1);
+                var player2Score = this.playerScore(2);
+
+                if (player1Score == player2Score){
+                    return "Draw";
+                }
+
+                if (player1Score > player2Score){
+                    return "Player 1 wins!";
+                } else {
+                    return "Player 2 wins!";
+                }
+            }
+        }
+    })
+</script>
+</body>
+</html>
