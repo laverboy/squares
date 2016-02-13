@@ -43,6 +43,7 @@
 
 <script src="underscore.min.js"></script>
 <script src="vue.js"></script>
+<script src="src/GenerateSquares.js"></script>
 <script>
     Vue.config.debug = true;
     var sq = new Vue({
@@ -51,55 +52,38 @@
             currentPlayer: 1,
             lineWidth: 20,
             lineLength: 150,
-            grid: 2,
-            dots : [
-                {x: 0, y: 0},
-                {x: 1, y: 0},
-                {x: 2, y: 0},
-                {x: 0, y: 1},
-                {x: 1, y: 1},
-                {x: 2, y: 1},
-                {x: 0, y: 2},
-                {x: 1, y: 2},
-                {x: 2, y: 2}
-            ],
-            lines : [
-                {x: 0, y: 1, d: 'e', active: false}, // first left
-                {x: 0, y: 2, d: 'e', active: false},
-                {x: 1, y: 0, d: 's', active: false}, // first top
-                {x: 1, y: 1, d: 'e', active: false}, // first right
-                {x: 1, y: 1, d: 's', active: false}, // first bottom
-                {x: 1, y: 2, d: 'e', active: false},
-                {x: 1, y: 2, d: 's', active: false},
-                {x: 2, y: 0, d: 's', active: false},
-                {x: 2, y: 1, d: 'e', active: false},
-                {x: 2, y: 1, d: 's', active: false},
-                {x: 2, y: 2, d: 'e', active: false},
-                {x: 2, y: 2, d: 's', active: false}
-            ],
-            boxes : [
-                {x: 1, y: 1, won: false, color: ''},
-                {x: 2, y: 1, won: false, color: ''},
-                {x: 1, y: 2, won: false, color: ''},
-                {x: 2, y: 2, won: false, color: ''}
-            ],
-            players : {
-                1 : {
+            grid: 4,
+            dots: [],
+            lines: [],
+            boxes: [],
+            players: {
+                1: {
                     name: '',
                     score: 0,
                     color: '#BADA55'
                 },
-                2 : {
+                2: {
                     name: '',
                     score: 0,
                     color: '#DABDAB'
                 }
             }
         },
+        created: function () {
+            this.dots = GenerateDots(this.grid);
+            this.lines = GenerateLines(this.grid);
+            this.boxes = GenerateBoxes(this.grid);
+            if (this.grid == 4){
+                this.lineWidth = 15;
+                this.lineLength = 100;
+            }
+        },
         computed: {
             finished: function () {
-                var length = 0, complete = _.reduce(this.boxes, function(count, box){
-                    if(box.won){count++;}
+                var length = 0, complete = _.reduce(this.boxes, function (count, box) {
+                    if (box.won) {
+                        count++;
+                    }
                     length++;
                     return count;
                 }, 0);
@@ -131,15 +115,15 @@
                 return style;
             },
             lineLeft: function (line) {
-                return line.d == 'e' ? line.x * this.lineLength + (line.x * this.lineWidth) : (line.x -1) * this.lineLength + (line.x * this.lineWidth)
+                return line.d == 'e' ? line.x * this.lineLength + (line.x * this.lineWidth) : (line.x - 1) * this.lineLength + (line.x * this.lineWidth)
             },
             lineTop: function (line) {
-                return line.d == 's' ? line.y * this.lineLength + (line.y * this.lineWidth) : (line.y -1) * this.lineLength + (line.y * this.lineWidth)
+                return line.d == 's' ? line.y * this.lineLength + (line.y * this.lineWidth) : (line.y - 1) * this.lineLength + (line.y * this.lineWidth)
             },
             boxStyle: function (box) {
                 var style = {};
-                style.left = (((box.x -1) * this.lineLength) + (box.x * this.lineWidth)) + "px";
-                style.top = (((box.y -1) * this.lineLength) + (box.y * this.lineWidth)) + "px";
+                style.left = (((box.x - 1) * this.lineLength) + (box.x * this.lineWidth)) + "px";
+                style.top = (((box.y - 1) * this.lineLength) + (box.y * this.lineWidth)) + "px";
                 style.backgroundColor = box.color;
                 style.width = this.lineLength + "px";
                 style.height = this.lineLength + "px";
@@ -172,12 +156,20 @@
                 return bottom.active && right.active && top.active && left.active;
             },
             calculateWinnings: function (line) {
-                var won = false, box2, box1 = this.boxes["" + line.x + line.y];
+                var won = false,
+                    box2,
+                    box1 = _.find(this.boxes, function (box) {
+                        return box.x == line.x && box.y == line.y;
+                    });
                 if (line.d == 's') {
-                    box2 = this.boxes["" + line.x + (line.y + 1)];
+                    box2 = _.find(this.boxes, function (box) {
+                        return box.x == line.x && box.y == (line.y + 1);
+                    });
                 }
                 if (line.d == 'e') {
-                    box2 = this.boxes["" + (line.x + 1) + line.y];
+                    box2 = _.find(this.boxes, function (box) {
+                        return box.x == (line.x + 1) && box.y == line.y;
+                    });
                 }
 
                 if (box1 && this.calculateIfBoxComplete(box1)) {
@@ -204,11 +196,11 @@
                 var player1Score = this.playerScore(1);
                 var player2Score = this.playerScore(2);
 
-                if (player1Score == player2Score){
+                if (player1Score == player2Score) {
                     return "Draw!";
                 }
 
-                if (player1Score > player2Score){
+                if (player1Score > player2Score) {
                     return "Player 1 wins!";
                 } else {
                     return "Player 2 wins!";
@@ -216,10 +208,6 @@
             }
         }
     });
-
-    function createSquares(gridSize){
-
-    }
 </script>
 </body>
 </html>
