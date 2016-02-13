@@ -18,12 +18,10 @@ a.s, a.e {
     transition: all .3s ease;
     display: block;
     position: absolute;
-    background-color: rgb(228, 228, 245);
-    opacity:.3;
+    background-color: rgba(228, 228, 245, .3);
 }
 a.s:hover, a.e:hover {
-    background-color: rgb(228, 228, 245);
-    opacity:.6;
+    background-color: rgba(228, 228, 245, .6);
 }
 
 a.s.active, a.e.active {

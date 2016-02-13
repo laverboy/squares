@@ -64,25 +64,25 @@
                 {x: 2, y: 2}
             ],
             lines : [
-                {x: 1, y: 0, d: 's', active: false}, // first top
                 {x: 0, y: 1, d: 'e', active: false}, // first left
+                {x: 0, y: 2, d: 'e', active: false},
+                {x: 1, y: 0, d: 's', active: false}, // first top
                 {x: 1, y: 1, d: 'e', active: false}, // first right
                 {x: 1, y: 1, d: 's', active: false}, // first bottom
+                {x: 1, y: 2, d: 'e', active: false},
+                {x: 1, y: 2, d: 's', active: false},
                 {x: 2, y: 0, d: 's', active: false},
-                {x: 2, y: 2, d: 'e', active: false},
-                {x: 2, y: 2, d: 's', active: false},
-                {x: 0, y: 2, d: 'e', active: false},
                 {x: 2, y: 1, d: 'e', active: false},
                 {x: 2, y: 1, d: 's', active: false},
-                {x: 1, y: 2, d: 'e', active: false},
-                {x: 1, y: 2, d: 's', active: false}
+                {x: 2, y: 2, d: 'e', active: false},
+                {x: 2, y: 2, d: 's', active: false}
             ],
-            boxes : {
-                11: {x: 1, y: 1, won: false, color: ''},
-                21: {x: 2, y: 1, won: false, color: ''},
-                12: {x: 1, y: 2, won: false, color: ''},
-                22: {x: 2, y: 2, won: false, color: ''}
-            },
+            boxes : [
+                {x: 1, y: 1, won: false, color: ''},
+                {x: 2, y: 1, won: false, color: ''},
+                {x: 1, y: 2, won: false, color: ''},
+                {x: 2, y: 2, won: false, color: ''}
+            ],
             players : {
                 1 : {
                     name: '',
@@ -215,7 +215,11 @@
                 }
             }
         }
-    })
+    });
+
+    function createSquares(gridSize){
+
+    }
 </script>
 </body>
 </html>
