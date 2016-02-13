@@ -10,22 +10,27 @@
 
 <div class="wrap" id="squares-wrap" :class="{ finished: finished }">
     <div id="squares-container" :style="containerStyle()">
-        <span class="finished">{{ result() }}</span>
-        <!-- Dots -->
-        <span v-for="dot in dots" class="dot" :style="dotStyle(dot)"></span>
+        <div class="result" :style="containerStyle()">
+            <h2>{{ result() }}</h2>
+        </div>
 
-        <!-- Lines -->
-        <a href="#" v-for="line in lines" class=""
-           @click.prevent="activate(line)"
-           :style="lineStyle(line)"
-           :class="{ active: line.active, s: line.d == 's', e: line.d == 'e' }"
-        ></a>
+        <div class="squares">
+            <!-- Dots -->
+            <span v-for="dot in dots" class="dot" :style="dotStyle(dot)"></span>
 
-        <!-- Boxes -->
-        <div class="box" v-for="box in boxes"
-             :style="boxStyle(box)"
-             :class="{ won: box.won }"
-        ></div>
+            <!-- Lines -->
+            <a href="#" v-for="line in lines" class=""
+               @click.prevent="activate(line)"
+               :style="lineStyle(line)"
+               :class="{ active: line.active, s: line.d == 's', e: line.d == 'e' }"
+            ></a>
+
+            <!-- Boxes -->
+            <div class="box" v-for="box in boxes"
+                 :style="boxStyle(box)"
+                 :class="{ won: box.won }"
+            ></div>
+        </div>
     </div>
 
     <div id="players-container">
@@ -200,7 +205,7 @@
                 var player2Score = this.playerScore(2);
 
                 if (player1Score == player2Score){
-                    return "Draw";
+                    return "Draw!";
                 }
 
                 if (player1Score > player2Score){

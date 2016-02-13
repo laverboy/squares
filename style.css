@@ -49,14 +49,26 @@ a.s.active, a.e.active {
     height: 20px;
 }
 
-span.finished {
+.wrap .result {
     display: none;
+    position: relative;
+    background-color: rgba(218, 87, 154, .9);
+    color: white;
+    z-index: 10;
 }
 
-.wrap.finished #squares-container {
+.wrap.finished #squares-container .squares {
     opacity: .2;
 }
 
-.wrap.finished span.finished {
+.wrap.finished .result {
     display: block;
+}
+
+.result h2 {
+    position: absolute;
+    top: 34%;
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
 }
